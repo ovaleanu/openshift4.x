@@ -1,0 +1,11 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: webapp-qa
+spec:
+  selector:
+    app: webapp-qa
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80

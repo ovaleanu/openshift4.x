@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp-dev
+  labels:
+    app: webapp-dev
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: webapp-dev
+  template:
+    metadata:
+      labels:
+        app: webapp-dev
+    spec:
+      containers:
+      - name: webapp-dev
+        image: savvythru/web-app-dev
+        securityContext:
+          privileged: true
+        ports:
+        - containerPort: 80

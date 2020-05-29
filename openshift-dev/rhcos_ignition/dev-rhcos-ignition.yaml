@@ -1,0 +1,104 @@
+{
+  "ignition": {
+    "version": "2.2.0"
+  },
+  "passwd": {
+    "users": [
+      {
+        "name": "core",
+        "sshAuthorizedKeys": [
+          "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCyLNwJNNuq1zGuvVfa35qojfXMySKmLhev+oR3PFf11GnAaYvBz2bpLv/9Om0sIAKY+sZyvMx2dxxS3cSS7Bhfg9Mra2VUx+NOTTicTLcpH5THfw6/BisPtPVA0PUXovIthvxNn71ZVV9CNXDz0ttTQmFumdu6HT8eDB6hMFUb3/GRMcw6ZdAM0DauUO/CSh2W9Pm0uGXPun5yq8aF78fKPA9m/9o6+Hd4Y4YjpLOCXQzGlMWDixjLZiMR81zJoYgOBOfw21QbCTEgD9rua8h9d6tq3bKbRkenOcW3y0EkS8az7s7bytPwAlYbP7eCFyaRVaBVYtg0QR0/znm42oy55aHFvUcVfWybFrNXnxdCeNrdn06CiIyIVLVDvKprvEASec3hCdNM9Kr7UGyt7aNgEhwSRYMrQltfq9ScmwC0xxz19y8jmQ7nMc5JhSrTkY0D4mUJF9bK91ekgiLyw8CDbdN2gyDBu3mxB6BAvUzgamQM3gTUuNZMmFijT90IQdb5vfmgdlXRKnVoE5xue5MaxSDEbuvEnItda3uMRhOBZ7pV3KllcBpavMleFWAtREbbBPUwq2lC5e/Sms0gl5pJaS44lmPadj+CCJe+Gh+zvsa3rjYffFfFDoyIQ86mHZjBG1WsuLT3kOaInb+EEZrc5V6leTAuDdM70SSML5Zjmw== root@helper.ocp4.contrail.io"
+        ]
+      }
+    ]
+  },
+  "storage": {
+    "directories": [
+      {
+	"filesystem": "root",
+	"path": "/opt/modules",
+        "user": {
+          "name": "root"
+        },
+	"mode": 755
+      },
+      {
+        "filesystem": "root",
+        "path": "/opt/modules.wd",
+        "user": {
+          "name": "root"
+        },
+        "mode": 755
+      }
+    ],
+    "files": [
+      {
+        "filesystem": "root",
+        "path": "/etc/sysconfig/network-scripts/ifcfg-ens3",
+        "user": {
+          "name": "root"
+        },
+        "contents": {
+          "source": "data:text/plain;charset=utf-8;base64,REVWSUNFPWVuczMKVFlQRT1FdGhlcm5ldApCT09UUFJPVE89ZGhjcApOQU1FPWVuczMKT05CT09UPXllcwo=",
+          "verification": {}
+        },
+        "mode": 272
+      },
+      {
+        "filesystem": "root",
+        "path": "/etc/sysconfig/network-scripts/ifcfg-vhost0",
+        "user": {
+          "name": "root"
+        },
+        "contents": {
+          "source": "data:text/plain;charset=utf-8;base64,",
+          "verification": {}
+        },
+        "mode": 272
+      },
+      {
+        "filesystem": "root",
+        "path": "/usr/local/bin/vhost-vlan-interface.sh",
+        "user": {
+          "name": "root"
+        },
+        "contents": {
+          "source": "data:text/plain;charset=utf-8;base64,IyEvYmluL2Jhc2gKCi9iaW4vc2VkIC1pICdzL2RoY3Avbm9uZS9nJyAvZXRjL3N5c2NvbmZpZy9uZXR3b3JrLXNjcmlwdHMvaWZjZmctZW5zMwovYmluL3NlZCAtaSAnJCBhIEJSSURHRT12aG9zdDAnIC9ldGMvc3lzY29uZmlnL25ldHdvcmstc2NyaXB0cy9pZmNmZy1lbnMzCgovYmluL2NhdCA+IC9ldGMvc3lzY29uZmlnL25ldHdvcmstc2NyaXB0cy9pZmNmZy12aG9zdDAgPDxFT0YKVFlQRT1CcmlkZ2UKQk9PVFBST1RPPWRoY3AKTkFNRT12aG9zdDAKREVWSUNFPXZob3N0MApPTkJPT1Q9eWVzCkRFTEFZPTAKRU9GCgpzeXN0ZW1jdGwgcmVzdGFydCBOZXR3b3JrTWFuYWdlcgoK",
+          "verification": {}
+        },
+        "mode": 365
+      },
+      {
+        "filesystem": "root",
+        "path": "/etc/fstab",
+        "user": {
+          "name": "root"
+        },
+        "contents": {
+          "source": "data:,overlay%20/lib/modules%20overlay%20lowerdir=/lib/modules,upperdir=/opt/modules,workdir=/opt/modules.wd%200%200",
+          "verification": {}
+        },
+        "mode": 644
+      }
+    ]
+  },
+  "systemd": {
+    "units": [
+       {
+         "name": "create-vhost-interface.service",
+         "enabled": true,
+         "contents": "[Unit]\n\t\tDescription=Create vhost0 interface\n\t\tWants=network-online.target\n\t\tAfter=network-online.target\n\t\t[Service]\n\t\tType=simple\n\t\tExecStart=/usr/local/bin/vhost-vlan-interface.sh\n\t\t[Install]\n\t\tWantedBy=multi-user.target"
+       },
+       {
+         "name": "pull-vrouter-image.service",
+         "enabled": true,
+         "contents": "[Unit]\n\t\tDescription=Pull vrouter image\n\t\tWants=network-online.target\n\t\tAfter=network-online.target\n\t\t[Service]\n\t\tExecStartPre=setenforce 0\n\t\tExecStartPre=-/bin/podman kill vrouter-kernel-init\n\t\tExecStartPre=-/bin/podman rm vrouter-kernel-init\n\t\tExecStartPre=/bin/podman pull apasyniuk/vrouter-kernel-init\n\t\tExecStart=/bin/podman run --name vrouter-kernel-init --volume /lib/modules:/lib/modules --volume /usr/local/bin:/host/bin --net=host docker.io/apasyniuk/vrouter-kernel-init\n\t\t[Install]\n\t\tWantedBy=multi-user.target"
+       },
+      {
+        "name": "restart.service",
+        "enabled": true,
+        "contents": "[Unit]\nConditionFirstBoot=yes\n[Service]\nType=idle\nExecStart=/sbin/reboot\n[Install]\nWantedBy=multi-user.target\n"
+      }
+    ]
+  }
+}

@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp-qa
+  labels:
+    app: webapp-qa
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: webapp-qa
+  template:
+    metadata:
+      labels:
+        app: webapp-qa
+    spec:
+      containers:
+      - name: webapp-qa
+        image: savvythru/web-app-qa
+        securityContext:
+          privileged: true
+        ports:
+        - containerPort: 80
