@@ -1,2 +1,2 @@
-HELLO
+Hello OpenShift4.x!
 
