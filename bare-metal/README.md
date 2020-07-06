@@ -6,20 +6,20 @@
 
 2. Configure DNS
 
-  Example DNS configuration
+  [Example DNS configuration](https://github.com/ovaleanujnpr/openshift4.x/tree/master/dns-config)
 
 3. Configure DHCP
 
-  Example DHCP configuration
+  [Example DHCP configuration](https://github.com/ovaleanujnpr/openshift4.x/tree/master/dhcp-config)
 
 4. Configure HAproxy
 
-  Example HAproxy configuration
+  [Example HAproxy configuration](https://github.com/ovaleanujnpr/openshift4.x/tree/master/haproxy-config)
 
 5. Configure PXE
 
-  Example PXE configuration
+  [Example PXE configuration](https://github.com/ovaleanujnpr/openshift4.x/tree/master/pxe-config)
 
 6. Configure Web (HTTP)
 
-  Example Web configuration
+  [Example Web configuration](https://github.com/ovaleanujnpr/openshift4.x/tree/master/web-config)
