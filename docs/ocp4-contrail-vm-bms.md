@@ -1,6 +1,7 @@
 ## Contrail with OpenShift 4.x installation on VMs running on KVM
 
-The following procedure works also if bare metal servers are used.
+The following procedure works also if bare metal servers are used. If there are existing DNS, DHCP, HTTP, PXE servers, update services following examples [here](https://github.com/ovaleanujnpr/openshift4.x/tree/master/bare-metal#bare-metal-prerequisites) and jump to [Create Ignition Configs](https://github.com/ovaleanujnpr/openshift4.x/blob/master/docs/ocp4-contrail-vm-bms.md#create-ignition-configs).
+
 The procedure follows [helper node installation guide line](https://github.com/RedHatOfficial/ocp4-helpernode/blob/master/docs/quickstart.md). Some modifications occurs when applying Contrail manifests
 
 On the hypervisor host create a working directory
@@ -213,7 +214,7 @@ Copy the ignition files in the `ignition` directory for the websever
 
 ### Install VMs
 
-From the hypervisor launch VMs using PXE booting.
+From the hypervisor launch VMs using PXE booting. For BMS, boot the servers using PXE booting.
 
 Launch Bootstrap VM
 ```
