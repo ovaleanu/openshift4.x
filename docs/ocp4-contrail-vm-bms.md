@@ -1,7 +1,7 @@
 ## Contrail with OpenShift 4.x installation on VMs running on KVM
 
 The following procedure works also if bare metal servers are used.
-The procedure follows [helper node installtion guideline](https://github.com/RedHatOfficial/ocp4-helpernode/blob/master/docs/quickstart.md). Some modifications occurs when applying Contrail manifests
+The procedure follows [helper node installation guide line](https://github.com/RedHatOfficial/ocp4-helpernode/blob/master/docs/quickstart.md). Some modifications occurs when applying Contrail manifests
 
 On the hypervisor host create a working directory
 
