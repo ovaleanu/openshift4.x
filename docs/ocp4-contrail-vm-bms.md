@@ -198,7 +198,6 @@ spec:
     name: ""
 status: {}
 ```
-Generate the ignition configs
 
 Clone contrail operator repository
 
@@ -223,7 +222,7 @@ Install Contrail manifests
 ./contrail-operator/deploy/openshift/install-manifests.sh --dir ./ --config ./config_contrail_operator.yaml
 ```
 
-Create ignition config files
+Generate the ignition configs
 
 ```
 # openshift-install create ignition-configs
