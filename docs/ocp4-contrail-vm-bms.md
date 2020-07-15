@@ -202,8 +202,8 @@ status: {}
 Clone contrail operator repository
 
 ```
-git clone https://github.com/Juniper/contrail-operator.git
-git checkout R2008
+# git clone https://github.com/Juniper/contrail-operator.git
+# git checkout R2008
 ```
 
 Create Contrail operator configuration file
@@ -219,7 +219,7 @@ EOF
 Install Contrail manifests
 
 ```
-./contrail-operator/deploy/openshift/install-manifests.sh --dir ./ --config ./config_contrail_operator.yaml
+# ./contrail-operator/deploy/openshift/install-manifests.sh --dir ./ --config ./config_contrail_operator.yaml
 ```
 
 Generate the ignition configs
