@@ -105,6 +105,8 @@ Copy vars.yaml file. Edit and change it if is necessary (domain name, mac addres
 # cp docs/examples/vars.yaml .
 ```
 
+To modify the OpenShift version modify `vars/main.yml` file
+
 Run the playbook to setup your helper node
 ```
 # ansible-playbook -e @vars.yaml tasks/main.yml
