@@ -212,7 +212,7 @@ Create Contrail operator configuration file
 
 ```
 # cat <<EOF > config_contrail_operator.yaml
-CONTRAIL_VERSION=2008.13
+CONTRAIL_VERSION=2008.20
 CONTRAIL_REGISTRY=hub.juniper.net/contrail-nightly
 DOCKER_CONFIG=eyJhdXRocyI6eyJodWIuanVuaXBlci5uZXQvY29udHJhaWwtbmlnaHRseSI6eyJ1c2VybmFtZSI6IkpOUFItRmllbGRVc2VyMTc5IiwicGFzc3dvcmQiOiJleWZMYkFxS2RFUTdXNG1EYVI2ViIsImVtYWlsIjoib3ZhbGVhbnVAanVuaXBlci5uZXQiLCJhdXRoIjoiU2s1UVVpMUdhV1ZzWkZWelpYSXhOems2WlhsbVRHSkJjVXRrUlZFM1Z6UnRSR0ZTTmxZPSJ9fX0=
 EOF
@@ -254,11 +254,22 @@ This command will create a bootstrap node VM, will connect to PXE server (our He
 
 Use `journalctl -f` to see the logs
 
-When the following message shows up
+On the Bootstrap node a temporary etcd and bootkube is created. When these services are running
 
 ```
-bootkube.sh[10828]: "99openshift-machineconfig99-master-ssh.yaml": unable to get REST mapping for "99openshift-machineconfig99-master-ssh.yaml": no matches for kind "MachineConfig" in version "machineconfiguration.openshift.io/v1"
+[core@bootstrap ~]$ sudo crictl ps
+CONTAINER           IMAGE                                                                                                                    CREATED              STATE               NAME                             ATTEMPT             POD ID
+33762f4a23d7d       976cc3323bd3394e613ff3d9ff02cd2ab55456063e08d6e275e81f71349d6399                                                         54 seconds ago       Running             manager                          3                   29aed2b586f33
+ad6f2453d7a16       86694d2cdf8823ae48f13242bbd7a381eaab0218831ed53e9806b5e19608b1ed                                                         About a minute ago   Running             kube-apiserver-insecure-readyz   0                   4cd5138fb8fa7
+3bbdf4176882f       quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:8db6b7ce80d002fb2687c6408d0efaae7cd908bb83b7b13ea512ad880747f02c   About a minute ago   Running             kube-scheduler                   0                   b3e7e6831100c
+57ad52023300e       quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:8db6b7ce80d002fb2687c6408d0efaae7cd908bb83b7b13ea512ad880747f02c   About a minute ago   Running             kube-controller-manager          0                   596e248e26449
+a1dbe7b8950da       quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:8db6b7ce80d002fb2687c6408d0efaae7cd908bb83b7b13ea512ad880747f02c   About a minute ago   Running             kube-apiserver                   0                   4cd5138fb8fa7
+5aa7a59a06feb       quay.io/openshift-release-dev/ocp-release@sha256:2e4bbcf4dff0857bec6328c77d3a0480c1ae6778d48c7fba197f54a3e1912c72        About a minute ago   Running             cluster-version-operator         0                   3ab41a6177a8d
+ca45790f4a5f6       099c2a95af4ff574a824a5476a960e86deec7e31882294116d195eb186752d36                                                         About a minute ago   Running             etcd-metrics                     0                   081b292dfe92b
+e72fb8aaa1606       quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:3af018d2799385f4e516cec73e24915351acf0012a8b775cf852eb05ad34797d   About a minute ago   Running             etcd-member                      0                   081b292dfe92b
+ca56bbf2708f7       1ac19399249cf839f48e246869b6932ce1273afb6a11a25e0eccb01092ea3cbf                                                         About a minute ago   Running             machine-config-server            0                   c1127810cd0ed
 ```
+
 it is time to launch the Masters VMs
 
 ```
@@ -296,7 +307,7 @@ INFO It is now safe to remove the bootstrap resources
 You can delete the bootstrap VM and luanch the Worker nodes from the Hypervisor
 
 ```
-# virt-install --pxe --network bridge=openshift4 --mac=52:54:00:f4:26:a1 --name ocp4-worker0 --ram=10192 -- vcpus=4 --os-variant rhel8.0 --disk path=/var/lib/libvirt/images/ocp4-worker0.qcow2,size=120 --vnc
+# virt-install --pxe --network bridge=openshift4 --mac=52:54:00:f4:26:a1 --name ocp4-worker0 --ram=10192 --vcpus=4 --os-variant rhel8.0 --disk path=/var/lib/libvirt/images/ocp4-worker0.qcow2,size=120 --vnc
 # virt-install --pxe --network bridge=openshift4 --mac=52:54:00:82:90:00 --name ocp4-worker1 --ram=10192 --vcpus=4 --os-variant rhel8.0 --disk path=/var/lib/libvirt/images/ocp4-worker1.qcow2,size=120 --vnc
 ```
 
