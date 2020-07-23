@@ -121,12 +121,6 @@ After it is done run the following to get info about your environment and some i
 
 _Note: make sure NTP server is configured on Hypervisor and Helper node, otherwise installation will fail with error `X509: certificate has expired or is not yet valid`_
 
-Create an install directory
-```
-# mkdir ~/ocp4
-# cd ~/ocp4
-```
-
 Create a place to store your pull-secret
 ```
 # mkdir -p ~/.openshift
@@ -144,6 +138,13 @@ This playbook creates an sshkey for you; it's under `~/.ssh/helper_rsa`. You can
 ```
 # ls -1 ~/.ssh/helper_rsa
 /root/.ssh/helper_rsa
+```
+
+Create an install directory
+
+```
+# mkdir ~/ocp4
+# cd ~/ocp4
 ```
 
 Next, create an `install-config.yaml` file.
@@ -249,7 +250,7 @@ Launch Bootstrap VM
 This command will create a bootstrap node VM, will connect to PXE server (our Helper), assign the IP address from DHCP and download the RHCOS image from the HTTP server. At the end of the installation it will embed the ignition file. After the node is installed and rebooted we can connect to it from the Helper.
 
 ```
-# ssh -i .ssh/helper_rsa core@192.168.7.20
+# ssh -i ~/.ssh/helper_rsa core@192.168.7.20
 ```
 
 Use `journalctl -f` to see the logs
@@ -281,16 +282,17 @@ it is time to launch the Masters VMs
 You can login to the Master from Helper Node
 
 ```
-# ssh -i .ssh/helper_rsa core@192.168.7.21
-# ssh -i .ssh/helper_rsa core@192.168.7.22
-# ssh -i .ssh/helper_rsa core@192.168.7.23
+# ssh -i ~/.ssh/helper_rsa core@192.168.7.21
+# ssh -i ~/.ssh/helper_rsa core@192.168.7.22
+# ssh -i ~/.ssh/helper_rsa core@192.168.7.23
 ```
 
 You can monitor pods creation with `sudo crictl ps` command
 
 ### Wait for install
 
-The boostrap VM actually does the install for you; you can track it with the following command.
+The boostrap VM actually does the install for you; you can track it with the following command from the Helper. Make sure you are in `~/ocp4` directory
+
 ```
 # openshift-install wait-for bootstrap-complete --log-level debug
 ```
@@ -353,7 +355,7 @@ If you need to expose the registry, run this command
 # oc patch configs.imageregistry.operator.openshift.io/cluster --type merge -p '{"spec":{"defaultRoute":true}}'
 ```
 
-To finish the install process, run the following
+To finish the install process, run the following (make sure you are in `~/ocp4` directory)
 
 ```
 openshift-install wait-for install-complete
