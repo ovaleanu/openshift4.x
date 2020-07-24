@@ -114,7 +114,7 @@ Create Contrail operator configuration file
 # cat <<EOF > config_contrail_operator.yaml
 CONTRAIL_VERSION=2008.20
 CONTRAIL_REGISTRY=hub.juniper.net/contrail-nightly
-DOCKER_CONFIG=eyJhdXRocyI6eyJodWIuanVuaXBlci5uZXQvY29udHJhaWwtbmlnaHRseSI6eyJ1c2VybmFtZSI6IkpOUFItRmllbGRVc2VyMTc5IiwicGFzc3dvcmQiOiJleWZMYkFxS2RFUTdXNG1EYVI2ViIsImVtYWlsIjoib3ZhbGVhbnVAanVuaXBlci5uZXQiLCJhdXRoIjoiU2s1UVVpMUdhV1ZzWkZWelpYSXhOems2WlhsbVRHSkJjVXRrUlZFM1Z6UnRSR0ZTTmxZPSJ9fX0=
+DOCKER_CONFIG=<this_needs_to_be_generated>
 EOF
 ```
 
