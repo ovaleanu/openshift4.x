@@ -44,7 +44,7 @@ $ ssh-keygen -b 4096 -t rsa -f ~/.ssh/id_rsa -N ""
 ```
 Create a working folder
 ```
-$ mkdir ~/aws-ocp4 ; cd ~/ocp4
+$ mkdir ~/aws-ocp4 ; cd ~/aws-ocp4
 ```
 Create a installation configuration file
 ```
