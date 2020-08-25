@@ -98,20 +98,20 @@ sshKey: |
 
 Create the installation manifests
 ```
-# openshift-install create manifests
+$ openshift-install create manifests
 ```
 
 Clone contrail operator repository
 
 ```
-# git clone https://github.com/Juniper/contrail-operator.git
-# git checkout R2008
+$ git clone https://github.com/Juniper/contrail-operator.git
+$ git checkout R2008
 ```
 
 Create Contrail operator configuration file
 
 ```
-# cat <<EOF > config_contrail_operator.yaml
+$ cat <<EOF > config_contrail_operator.yaml
 CONTRAIL_VERSION=2008.20
 CONTRAIL_REGISTRY=hub.juniper.net/contrail-nightly
 DOCKER_CONFIG=<this_needs_to_be_generated>
@@ -124,7 +124,7 @@ _NOTE: You may create base64 encoded value for config with script provided [here
 Install Contrail manifests
 
 ```
-# ./contrail-operator/deploy/openshift/install-manifests.sh --dir ./ --config ./config_contrail_operator.yaml
+$ ./contrail-operator/deploy/openshift/install-manifests.sh --dir ./ --config ./config_contrail_operator.yaml
 ```
 
 Create cluster
