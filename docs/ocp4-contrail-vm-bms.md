@@ -239,6 +239,7 @@ Copy the ignition files in the `ignition` directory for the websever
 ```
 # cp ~/ocp4/*.ign /var/www/html/ignition/
 # restorecon -vR /var/www/html/
+# restorecon -vR /var/lib/tftpboot/
 # chmod o+r /var/www/html/ignition/*.ign
 ```
 
