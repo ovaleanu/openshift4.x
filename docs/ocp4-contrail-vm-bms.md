@@ -278,9 +278,9 @@ ca56bbf2708f7       1ac19399249cf839f48e246869b6932ce1273afb6a11a25e0eccb01092ea
 it is time to launch the Masters VMs
 
 ```
-# virt-install --pxe --network bridge=openshift4 --mac=52:54:00:e7:9d:67 --name ocp4-master0 --ram=32288 --vcpus=10 --os-variant rhel8.0 --disk path=/var/lib/libvirt/images/ocp4-master0.qcow2,size=250 --vnc
-# virt-install --pxe --network bridge=openshift4 --mac=52:54:00:80:16:23 --name ocp4-master1 --ram=32288 --vcpus=10 --os-variant rhel8.0 --disk path=/var/lib/libvirt/images/ocp4-master1.qcow2,size=250 --vnc
-# virt-install --pxe --network bridge=openshift4 --mac=52:54:00:d5:1c:39 --name ocp4-master2 --ram=32288 --vcpus=10 --os-variant rhel8.0 --disk path=/var/lib/libvirt/images/ocp4-master2.qcow2,size=250 --vnc
+# virt-install --pxe --network bridge=openshift4 --mac=52:54:00:e7:9d:67 --name ocp4-master0 --ram=40960 --vcpus=10 --os-variant rhel8.0 --disk path=/var/lib/libvirt/images/ocp4-master0.qcow2,size=250 --vnc
+# virt-install --pxe --network bridge=openshift4 --mac=52:54:00:80:16:23 --name ocp4-master1 --ram=40960 --vcpus=10 --os-variant rhel8.0 --disk path=/var/lib/libvirt/images/ocp4-master1.qcow2,size=250 --vnc
+# virt-install --pxe --network bridge=openshift4 --mac=52:54:00:d5:1c:39 --name ocp4-master2 --ram=40960 --vcpus=10 --os-variant rhel8.0 --disk path=/var/lib/libvirt/images/ocp4-master2.qcow2,size=250 --vnc
 ```
 
 You can login to the Master from Helper Node
