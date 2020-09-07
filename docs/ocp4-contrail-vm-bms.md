@@ -154,7 +154,7 @@ Next, create an `install-config.yaml` file.
 apiVersion: v1
 baseDomain: example.com
 compute:
-  hyperthreading: Disabled
+- hyperthreading: Disabled
   name: worker
   replicas: 0
 controlPlane:
