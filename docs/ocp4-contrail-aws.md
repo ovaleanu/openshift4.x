@@ -24,12 +24,12 @@ $ curl -s https://mirror.openshift.com/pub/openshift-v4/clients/ocp/ | \
 Set the version and download the installer and cli tool
 
 ```
-$ VERSION=4.4.11
+$ VERSION=4.4.18
 $ wget https://mirror.openshift.com/pub/openshift-v4/clients/ocp/$VERSION/openshift-install-linux-$VERSION.tar.gz
 $ wget https://mirror.openshift.com/pub/openshift-v4/clients/ocp/$VERSION/openshift-client-mac-$VERSION.tar.gz
 
-$ tar -xvzf openshift-install-mac-4.4.11.tar.gz -C /usr/local/bin
-$ tar -xvzf openshift-client-mac-4.4.11.tar.gz -C /usr/local/bin
+$ tar -xvzf openshift-install-mac-4.4.18.tar.gz -C /usr/local/bin
+$ tar -xvzf openshift-client-mac-4.4.18.tar.gz -C /usr/local/bin
 
 $ openshift-install version
 $ oc version
@@ -65,15 +65,25 @@ compute:
 - architecture: amd64
   hyperthreading: Enabled
   name: worker
-  platform: {}
-  replicas: 2
+  platform:
+    aws:
+      rootVolume:
+        iops: 2000
+        size: 500
+        type: io1
+      type: m5.4xlarge
+  replicas: 3
 controlPlane:
   architecture: amd64
   hyperthreading: Enabled
   name: master
   platform:
     aws:
-       type: m5.2xlarge
+      rootVolume:
+        iops: 4000
+        size: 500
+        type: io1
+      type: m5.2xlarge
   replicas: 3
 metadata:
   creationTimestamp: null
