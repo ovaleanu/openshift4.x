@@ -46,7 +46,7 @@ Create a working folder
 ```
 $ mkdir ~/aws-ocp4 ; cd ~/aws-ocp4
 ```
-Create a installation configuration file
+Create a installation configuration file. Check details on [OpenShift docs](https://docs.openshift.com/container-platform/4.5/installing/installing_aws/installing-aws-customizations.html#installation-initializing_installing-aws-customizations)
 ```
 $ openshift-install create install-config
 ```
