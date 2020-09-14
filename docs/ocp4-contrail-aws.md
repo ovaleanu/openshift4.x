@@ -24,12 +24,12 @@ $ curl -s https://mirror.openshift.com/pub/openshift-v4/clients/ocp/ | \
 Set the version and download the installer and cli tool
 
 ```
-$ VERSION=4.4.18
+$ VERSION=4.4.20
 $ wget https://mirror.openshift.com/pub/openshift-v4/clients/ocp/$VERSION/openshift-install-linux-$VERSION.tar.gz
 $ wget https://mirror.openshift.com/pub/openshift-v4/clients/ocp/$VERSION/openshift-client-mac-$VERSION.tar.gz
 
-$ tar -xvzf openshift-install-mac-4.4.18.tar.gz -C /usr/local/bin
-$ tar -xvzf openshift-client-mac-4.4.18.tar.gz -C /usr/local/bin
+$ tar -xvzf openshift-install-mac-4.4.20.tar.gz -C /usr/local/bin
+$ tar -xvzf openshift-client-mac-4.4.20.tar.gz -C /usr/local/bin
 
 $ openshift-install version
 $ oc version
@@ -171,7 +171,7 @@ $ export KUBECONFIG=~/aws-ocp4/auth/kubeconfig
 
 ### Adding a user
 
-By default, OpenShift4 ships with a single kubeadmin user, that could be used during initial cluster configuration. We will create a Custom Resource (CR) to define a HTTPasswd identity provider.
+By default, OpenShift4 ships with a single kubeadmin user, that could be used during initial cluster configuration. You will create a Custom Resource (CR) to define a HTTPasswd identity provider.
 
 To use the HTPasswd identity provider, you must generate a flat file that contains the user names and passwords for your cluster by using [htpasswd](https://httpd.apache.org/docs/2.4/programs/htpasswd.html).
 ```
@@ -192,7 +192,7 @@ $ oc create secret generic htpass-secret --from-file=htpasswd=/Users/ovaleanu/aw
 This Custom Resource shows the parameters and acceptable values for an HTPasswd identity provider.
 
 ```
-$ cat ../aws1_ocp4_old/old_stuff/htpasswdCR.yaml
+$ cat htpasswdCR.yaml
 apiVersion: config.openshift.io/v1
 kind: OAuth
 metadata:

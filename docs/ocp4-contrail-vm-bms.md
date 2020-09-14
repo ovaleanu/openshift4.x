@@ -378,7 +378,7 @@ INFO Login to the console with user: kubeadmin, password: XXX-XXXX-XXXX-XXXX
 
 ### Adding a user
 
-By default, OpenShift4 ships with a single kubeadmin user, that could be used during initial cluster configuration. We will create a Custom Resource (CR) to define a HTTPasswd identity provider.
+By default, OpenShift4 ships with a single kubeadmin user, that could be used during initial cluster configuration. You will create a Custom Resource (CR) to define a HTTPasswd identity provider.
 
 To use the HTPasswd identity provider, you must generate a flat file that contains the user names and passwords for your cluster by using [htpasswd](https://httpd.apache.org/docs/2.4/programs/htpasswd.html).
 ```
