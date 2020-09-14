@@ -221,3 +221,62 @@ Access the cluster
 ```
 $ export KUBECONFIG=~/az-ocp4/auth/kubeconfig
 ```
+
+### Adding a user
+
+By default, OpenShift4 ships with a single kubeadmin user, that could be used during initial cluster configuration. We will create a Custom Resource (CR) to define a HTTPasswd identity provider.
+
+To use the HTPasswd identity provider, you must generate a flat file that contains the user names and passwords for your cluster by using [htpasswd](https://httpd.apache.org/docs/2.4/programs/htpasswd.html).
+```
+$ htpasswd -c -B -b users.htpasswd ovaleanu MyPassword
+```
+
+You should get a file like this
+```
+$ cat users.htpasswd
+ovaleanu:$2y$05$M7lvBvh7X1ElpYBGO2ZObOfLE8z2NHNUq2yzhC./AbXOxXVFKNMK6
+```
+
+Next we need to define a secret that contains the HTPasswd user file
+```
+$ oc create secret generic htpass-secret --from-file=htpasswd=/Users/ovaleanu/az-ocp4/users.htpasswd -n openshift-config
+```
+
+This Custom Resource shows the parameters and acceptable values for an HTPasswd identity provider.
+
+```
+$ cat ../aws1_ocp4_old/old_stuff/htpasswdCR.yaml
+apiVersion: config.openshift.io/v1
+kind: OAuth
+metadata:
+  name: cluster
+spec:
+  identityProviders:
+  - name: ovaleanu
+    mappingMethod: claim
+    type: HTPasswd
+    htpasswd:
+      fileData:
+        name: htpass-secret
+```
+
+Apply the defined CR
+```
+$ oc create -f htpasswdCR.yaml
+```
+
+Add the user to `cluster-amdin` role
+```
+$ oc adm policy add-cluster-role-to-user cluster-admin ovaleanu
+```
+
+Login using the user
+```
+oc login -u ovaleanu
+Authentication required for https://api.az1.azovsandbox.com:6443 (openshift)
+Username: ovaleanu
+Password:
+Login successful.
+```
+
+Now it is safe to remove kubeadmin user. Details [here](https://docs.openshift.com/container-platform/4.5/authentication/remove-kubeadmin.html).
