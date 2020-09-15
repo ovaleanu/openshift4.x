@@ -25,7 +25,7 @@ Set the version and download the installer and cli tool
 
 ```
 $ VERSION=4.4.20
-$ wget https://mirror.openshift.com/pub/openshift-v4/clients/ocp/$VERSION/openshift-install-linux-$VERSION.tar.gz
+$ wget https://mirror.openshift.com/pub/openshift-v4/clients/ocp/$VERSION/openshift-install-mac-$VERSION.tar.gz
 $ wget https://mirror.openshift.com/pub/openshift-v4/clients/ocp/$VERSION/openshift-client-mac-$VERSION.tar.gz
 
 $ tar -xvzf openshift-install-mac-4.4.20.tar.gz -C /usr/local/bin
@@ -122,7 +122,7 @@ Create Contrail operator configuration file
 
 ```
 $ cat <<EOF > config_contrail_operator.yaml
-CONTRAIL_VERSION=2008.20
+CONTRAIL_VERSION=2008.109
 CONTRAIL_REGISTRY=hub.juniper.net/contrail-nightly
 DOCKER_CONFIG=<this_needs_to_be_generated>
 EOF

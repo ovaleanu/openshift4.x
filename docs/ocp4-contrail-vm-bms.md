@@ -213,7 +213,7 @@ Create Contrail operator configuration file
 
 ```
 # cat <<EOF > config_contrail_operator.yaml
-CONTRAIL_VERSION=2008.20
+CONTRAIL_VERSION=2008.109
 CONTRAIL_REGISTRY=hub.juniper.net/contrail-nightly
 DOCKER_CONFIG=<this_needs_to_be_generated>
 EOF
