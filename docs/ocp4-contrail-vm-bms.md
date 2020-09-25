@@ -129,14 +129,14 @@ Create a place to store your pull-secret
 Visit [try.openshift.com](https://cloud.redhat.com/openshift/install) and select "Bare Metal". Download your pull secret and save it under ~/.openshift/pull-secret
 
 ```
-# ls -1 ~/.openshift/pull-secret
+# ls -l ~/.openshift/pull-secret
 /root/.openshift/pull-secret
 ```
 
 This playbook creates an sshkey for you; it's under `~/.ssh/helper_rsa`. You can use this key or create/user another one if you wish.
 
 ```
-# ls -1 ~/.ssh/helper_rsa
+# ls -l ~/.ssh/helper_rsa
 /root/.ssh/helper_rsa
 ```
 
@@ -213,7 +213,7 @@ Create Contrail operator configuration file
 
 ```
 # cat <<EOF > config_contrail_operator.yaml
-CONTRAIL_VERSION=2008.109
+CONTRAIL_VERSION=2008.121
 CONTRAIL_REGISTRY=hub.juniper.net/contrail-nightly
 DOCKER_CONFIG=<this_needs_to_be_generated>
 EOF
