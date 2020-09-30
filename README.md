@@ -9,6 +9,7 @@
 ## Use cases
 
 [OpenShift Virtualisation on OpenShift 4 with Contrail](https://github.com/ovaleanujnpr/openshift4.x/blob/master/docs/ocp4-contrail-kubevirt.md)
+
 [Multi-interface pod](https://github.com/ovaleanujnpr/openshift4.x/blob/master/docs/ocp4-contrail-multi-int-pod.md)
 
 ## Useful tool
