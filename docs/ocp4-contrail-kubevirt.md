@@ -402,6 +402,7 @@ fedora@192.168.7.12's password:
 [fedora@vmi-fedora ~]$ uname -sr
 Linux 4.13.9-300.fc27.x86_64
 
+
 [fedora@vmi-fedora ~]$ ping www.google.com
 PING www.google.com (142.250.73.196) 56(84) bytes of data.
 64 bytes from iad23s87-in-f4.1e100.net (142.250.73.196): icmp_seq=1 ttl=108 time=14.3 ms
