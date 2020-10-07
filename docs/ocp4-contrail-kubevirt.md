@@ -82,7 +82,7 @@ EOF
 ```
 This yaml file will create the required `Namespace`, `OperatorGroup` and `Subscription` for the OpenShift Virtualisation.
 ```
-$ oc apply -f cmv.yaml
+$ oc apply -f cnv.yaml
 ```
 
 Now we can deploy the OpenShift Virtualisation operator. Create a yaml file with the following content
