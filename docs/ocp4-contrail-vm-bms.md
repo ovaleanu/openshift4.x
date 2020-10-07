@@ -419,6 +419,25 @@ Apply the defined CR
 $ oc create -f htpasswdCR.yaml
 ```
 
+**If you have OpenShift4.5 the OAuth CR already exists and you just need to append it with spec properties**
+
+```
+$ oc edit oath/cluster
+```
+
+Append under `spec` with this and save
+
+```
+spec:
+  identityProviders:
+  - name: ovaleanu
+    mappingMethod: claim
+    type: HTPasswd
+    htpasswd:
+      fileData:
+        name: htpass-secret
+```
+
 Add the user to `cluster-amdin` role
 ```
 $ oc adm policy add-cluster-role-to-user cluster-admin ovaleanu
