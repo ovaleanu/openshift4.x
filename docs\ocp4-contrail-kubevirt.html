@@ -437,7 +437,7 @@ service/vmi-fedora-ssh-svc created
 $ oc get svc -n cnv-demo
 NAME                 TYPE       CLUSTER-IP       EXTERNAL-IP   PORT(S)           AGE
 vmi-centos-ssh-svc   NodePort   172.30.115.77    &lt;none&gt;        27017:30000/TCP   5h16m
-vmi-fedora-ssh-svc   NodePort   172.30.247.145   &lt;none&gt;        25025:31000/TCP   98m</code></pre><p>Connect to Fedora VM with ssh via service NodePort using worker node IP address. I will need to enable the network interfaces in custom networks, <code>neta</code> and <code>netb</code>.</p>
+vmi-fedora-ssh-svc   NodePort   172.30.247.145   &lt;none&gt;        25025:31000/TCP   98m</code></pre><p>Connect to Fedora VM with ssh via service NodePort using worker node IP address, lie I did previously with Centos VM. I will need to enable manually the network interfaces in the custom networks, <code>neta</code> and <code>netb</code>.</p>
 <pre><code>$ ssh fedora@192.168.7.12 -p 31000
 The authenticity of host &apos;[192.168.7.12]:31000 ([192.168.7.12]:31000)&apos; can&apos;t be established.
 ECDSA key fingerprint is SHA256:JlhysyH0XiHXszLLqu8GmuSHB4msOYWPAJjZhv5j3FM.

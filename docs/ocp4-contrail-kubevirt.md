@@ -527,7 +527,7 @@ vmi-fedora-ssh-svc   NodePort   172.30.247.145   <none>        25025:31000/TCP  
 ```
 
 
-Connect to Fedora VM with ssh via service NodePort using worker node IP address. I will need to enable the network interfaces in custom networks, `neta` and `netb`.
+Connect to Fedora VM with ssh via service NodePort using worker node IP address, lie I did previously with Centos VM. I will need to enable manually the network interfaces in the custom networks, `neta` and `netb`.
 
 ```
 $ ssh fedora@192.168.7.12 -p 31000
