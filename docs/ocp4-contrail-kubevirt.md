@@ -178,7 +178,7 @@ data:
 ```
 Then you need to restart `virt-handler` pods
 
-### Creating Virtual Machines on OpenShift Virtualisation
+### Creating Virtual Machine on OpenShift Virtualisation
 
 Create namespace for the demo. I will call it `cnv-demo`.
 
@@ -235,66 +235,44 @@ $ oc apply -f kubevirt-centos.yaml
 virtualmachineinstance.kubevirt.io/vmi-centos7 created
 ```
 
-Create also a Virtual Machine with Fedora using the following manifest:
-
+Check if the pod and VirtualMachineInstance was created
 ```
-cat <<EOF > kubevirt-fedora.yaml
-apiVersion: kubevirt.io/v1alpha3
-kind: VirtualMachineInstance
-metadata:
-  labels:
-    special: vmi-fedora
-  name: vmi-fedora
-spec:
-  domain:
-    devices:
-      disks:
-      - disk:
-          bus: virtio
-        name: containerdisk
-      - disk:
-          bus: virtio
-        name: cloudinitdisk
-      interfaces:
-      - name: default
-        bridge: {}
-    resources:
-      requests:
-        memory: 1024M
-  networks:
-  - name: default
-    pod: {}
-  volumes:
-  - containerDisk:
-      image: kubevirt/fedora-cloud-registry-disk-demo
-    name: containerdisk
-  - cloudInitNoCloud:
-      userData: |-
-        #cloud-config
-        password: fedora
-        ssh_pwauth: True
-        chpasswd: { expire: False }
-    name: cloudinitdisk
-EOF
-
-$ oc apply -f kubevirt-fedora.yaml
-virtualmachineinstance.kubevirt.io/vmi-fedora created
-```
-
-Check if the pods and VirtualMachineInstance were created
-```
-$ oc get pods -n cnv-demo
-NAME                              READY   STATUS    RESTARTS   AGE
-virt-launcher-vmi-centos7-q2jr6   2/2     Running   0          47s
-virt-launcher-vmi-fedora-fml6q    2/2     Running   0          39s
+$ oc get pods
+NAME                              READY   STATUS    RESTARTS   AGE     IP              NODE                       NOMINATED NODE   READINESS GATES
+virt-launcher-vmi-centos7-ttngl   2/2     Running   0          3h57m   10.254.255.90   worker0.ocp4.example.com   <none>           <none>
 
 $ oc get vmi
-NAME          AGE    PHASE     IP              NODENAME
-vmi-centos7   2m2s   Running   10.254.255.85   worker1.ocp4.example.com
-vmi-fedora    114s   Running   10.254.255.67   worker1.ocp4.example.com
+NAME          AGE    PHASE     IP                 NODENAME
+vmi-centos7   4h1m   Running   10.254.255.90/16   worker0.ocp4.example.com
 ```
 
-Create a service for each VM to connect with ssh through NodePort using node ip
+### Test VM to pod connectivity
+
+To test VM to pod connectivity, let's create a small Ubuntu pod
+
+```
+cat <<EOF > ubuntu.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ubuntuapp
+  labels:
+    app: ubuntuapp
+spec:
+  containers:
+    - name: ubuntuapp
+      image: ubuntu-upstart
+EOF
+
+$ oc create -f ubuntu.yaml
+
+$ oc get pods
+NAME                              READY   STATUS    RESTARTS   AGE     IP              NODE                       NOMINATED NODE   READINESS GATES
+ubuntuapp                         1/1     Running   0          3h52m   10.254.255.89   worker1.ocp4.example.com   <none>           <none>
+virt-launcher-vmi-centos7-ttngl   2/2     Running   0          3h57m   10.254.255.90   worker0.ocp4.example.com   <none>           <none>
+```
+
+Create a service for Centos VM to connect with ssh through NodePort using node ip
 
 ```
 cat <<EOF > kubevirt-centos-svc.yaml
@@ -316,50 +294,22 @@ spec:
 EOF
 
 $ oc apply -f kubevirt-centos-svc.yaml
-service/vmi-centos-ssh-svc created
+
+$ oc get svc
+NAME                 TYPE       CLUSTER-IP       EXTERNAL-IP   PORT(S)           AGE
+vmi-centos-ssh-svc   NodePort   172.30.115.77    <none>        27017:30000/TCP   4h2m
 ```
 
-```
-cat <<EOF > kubevirt-fedora-svc.yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: vmi-fedora-ssh-svc
-  namespace: cnv-demo
-spec:
-  ports:
-  - name: fedora-ssh-svc
-    nodePort: 31000
-    port: 25025
-    protocol: TCP
-    targetPort: 22
-  selector:
-    special: vmi-fedora
-  type: NodePort
-EOF
-
-$ oc apply -f kubevirt-fedora-svc.yaml
-service/vmi-fedora-ssh-svc created
-```
-```
-$ oc get svc -n cnv-demo
-NAME                 TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)           AGE
-vmi-centos-ssh-svc   NodePort   172.30.18.44    <none>        27017:30000/TCP   31s
-vmi-fedora-ssh-svc   NodePort   172.30.55.247   <none>        25025:31000/TCP   14s
-```
-
-### Test Virtual Machines connectivity
-
-Connect to VMs with ssh via service NodePort using worker node IP address
+Connect to Centos VM with ssh via service NodePort using worker node IP address
 
 ```
-$ ssh centos@192.168.7.12 -p 30000
-The authenticity of host '[192.168.7.12]:30000 ([192.168.7.12]:30000)' can't be established.
+$ ssh centos@192.168.7.11 -p 30000
+The authenticity of host '[192.168.7.11]:30000 ([192.168.7.11]:30000)' can't be established.
 ECDSA key fingerprint is SHA256:kk+9dbMqzpXDoPucnxiYozBgDt75IBSNS8Y4hUcEEmI.
 ECDSA key fingerprint is MD5:86:b6:e9:3b:f0:55:ee:e7:fd:56:96:c3:4a:c6:fd:e0.
 Are you sure you want to continue connecting (yes/no)? yes
-Warning: Permanently added '[192.168.7.12]:30000' (ECDSA) to the list of known hosts.
-centos@192.168.7.12's password:
+Warning: Permanently added '[192.168.7.11]:30000' (ECDSA) to the list of known hosts.
+centos@192.168.7.11's password:
 
 [centos@vmi-centos7 ~]$ uname -sr
 Linux 3.10.0-957.12.2.el7.x86_64
@@ -376,41 +326,17 @@ PING www.google.com (142.250.73.196) 56(84) bytes of data.
 rtt min/avg/max/mdev = 11.990/12.547/13.104/0.557 ms
 ```
 
-Confirm the Centos VM can ping the other Fedora VM
+Ping the Ubuntu pod IP
+
 ```
-[centos@vmi-centos7 ~]$ ping 10.254.255.67
-PING 10.254.255.67 (10.254.255.67) 56(84) bytes of data.
-64 bytes from 10.254.255.67: icmp_seq=1 ttl=63 time=8.33 ms
-64 bytes from 10.254.255.67: icmp_seq=2 ttl=63 time=3.19 ms
+[centos@vmi-centos7 ~]$ ping 10.254.255.89
+PING 10.254.255.89 (10.254.255.89) 56(84) bytes of data.
+64 bytes from 10.254.255.89: icmp_seq=1 ttl=63 time=3.83 ms
+64 bytes from 10.254.255.89: icmp_seq=2 ttl=63 time=2.26 ms
 ^C
---- 10.254.255.67 ping statistics ---
-2 packets transmitted, 2 received, 0% packet loss, time 1002ms
-rtt min/avg/max/mdev = 3.190/5.760/8.331/2.571 ms
-```
-
-Repeat the same steps for Fedora VM
-
-```
-$ ssh fedora@192.168.7.12 -p 31000
-The authenticity of host '[192.168.7.12]:31000 ([192.168.7.12]:31000)' can't be established.
-ECDSA key fingerprint is SHA256:JlhysyH0XiHXszLLqu8GmuSHB4msOYWPAJjZhv5j3FM.
-ECDSA key fingerprint is MD5:62:ca:0b:b9:21:c9:2b:73:db:b6:09:e2:b0:b4:81:60.
-Are you sure you want to continue connecting (yes/no)? yes
-Warning: Permanently added '[192.168.7.12]:31000' (ECDSA) to the list of known hosts.
-fedora@192.168.7.12's password:
-
-[fedora@vmi-fedora ~]$ uname -sr
-Linux 4.13.9-300.fc27.x86_64
-
-
-[fedora@vmi-fedora ~]$ ping www.google.com
-PING www.google.com (142.250.73.196) 56(84) bytes of data.
-64 bytes from iad23s87-in-f4.1e100.net (142.250.73.196): icmp_seq=1 ttl=108 time=14.3 ms
-64 bytes from iad23s87-in-f4.1e100.net (142.250.73.196): icmp_seq=2 ttl=108 time=12.3 ms
-^C
---- www.google.com ping statistics ---
-2 packets transmitted, 2 received, 0% packet loss, time 1004ms
-rtt min/avg/max/mdev = 12.326/13.360/14.394/1.034 ms
+--- 10.254.255.89 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1003ms
+rtt min/avg/max/mdev = 2.263/3.047/3.831/0.784 ms
 ```
 
 ### Contrail Security policy
@@ -445,19 +371,237 @@ $ oc apply -f kubevirt-centos-netpol.yaml
 networkpolicy.networking.k8s.io/netpol
 ```
 
-Connect to VM again and ping Fedora VM ip. Pinging www.google.com will not work.
+Connect to Centos VM again and ping Ubuntu pod ip. Pinging www.google.com will not work.
+
 ```
-$ ssh centos@192.168.7.12 -p 30000
-centos@192.168.7.12's password:
-Last login: Wed Sep 30 11:09:49 2020 from 192.168.7.12
-[centos@vmi-centos7 ~]$ ping 10.254.255.67
-PING 10.254.255.67 (10.254.255.67) 56(84) bytes of data.
-64 bytes from 10.254.255.67: icmp_seq=1 ttl=63 time=8.52 ms
-64 bytes from 10.254.255.67: icmp_seq=2 ttl=63 time=4.12 ms
+[root@helper ocp4]# ssh centos@192.168.7.11 -p 30000
+centos@192.168.7.11's password:
+[centos@vmi-centos7 ~]$ ping 10.254.255.89
+PING 10.254.255.89 (10.254.255.89) 56(84) bytes of data.
+64 bytes from 10.254.255.89: icmp_seq=1 ttl=63 time=2.58 ms
+64 bytes from 10.254.255.89: icmp_seq=2 ttl=63 time=2.39 ms
 ^C
---- 10.254.255.67 ping statistics ---
-2 packets transmitted, 2 received, 0% packet loss, time 1007ms
-rtt min/avg/max/mdev = 4.120/6.320/8.521/2.201 ms
+--- 10.254.255.89 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1003ms
+rtt min/avg/max/mdev = 2.394/2.490/2.587/0.108 ms
 [centos@vmi-centos7 ~]$ ping www.google.com
 ^C
+[centos@vmi-centos7 ~]$
+````
+
+### Creating a Virtual Machine with multiple interfaces
+
+I will create two virtual networks `neta` and `netb` in Contrail
+
+```
+$ cat <<EOF > netab.yaml
+apiVersion: "k8s.cni.cncf.io/v1"
+kind: NetworkAttachmentDefinition
+metadata:
+ name: neta
+ annotations:
+   "opencontrail.org/cidr" : "10.10.10.0/24"
+spec:
+ config: '{
+   "cniVersion": "0.3.1",
+   "type": "contrail-k8s-cni"
+}'
+
+---
+apiVersion: "k8s.cni.cncf.io/v1"
+kind: NetworkAttachmentDefinition
+metadata:
+ name: netb
+ annotations:
+   "opencontrail.org/cidr" : "20.20.20.0/24"
+spec:
+ config: '{
+   "cniVersion": "0.3.1",
+   "type": "contrail-k8s-cni"
+}'
+EOF
+
+$ oc apply -f netab.yaml
+```
+
+Now I will create a Fedora VM with an interface in `neta` and another one in `netb`.
+(by default all the pods with multiple interfaces will have a interface in default podNetwork as well)
+
+Use the following manifest to create the VM
+
+```
+apiVersion: kubevirt.io/v1alpha3
+kind: VirtualMachineInstance
+metadata:
+  labels:
+    special: vmi-fedora
+  name: vmi-fedora
+spec:
+  domain:
+    devices:
+      disks:
+      - disk:
+          bus: virtio
+        name: containerdisk
+      - disk:
+          bus: virtio
+        name: cloudinitdisk
+      interfaces:
+      - name: default
+        bridge: {}
+      - name: neta
+        bridge: {}
+      - name: netb
+        bridge: {}
+    resources:
+      requests:
+        memory: 1024M
+  networks:
+  - name: default
+    pod: {}
+  - name: neta
+    multus:
+      networkName: neta
+  - name: netb
+    multus:
+      networkName: netb
+  volumes:
+  - containerDisk:
+      image: kubevirt/fedora-cloud-registry-disk-demo
+    name: containerdisk
+  - cloudInitNoCloud:
+      userData: |-
+        #cloud-config
+        password: fedora
+        ssh_pwauth: True
+        chpasswd: { expire: False }
+    name: cloudinitdisk
+EOF
+
+$ oc apply -f kubevirt-fedora.yaml
+```
+
+Check if the pod and VirtualMachineInstance was created
+
+```
+$ oc get pods
+NAME                              READY   STATUS    RESTARTS   AGE
+ubuntuapp                         1/1     Running   0          5h11m
+virt-launcher-vmi-centos7-ttngl   2/2     Running   0          5h16m
+virt-launcher-vmi-fedora-czwhx    2/2     Running   0          102m
+
+$ oc get vmi
+NAME          AGE     PHASE     IP                 NODENAME
+vmi-centos7   5h17m   Running   10.254.255.90/16   worker0.ocp4.example.com
+vmi-fedora    103m    Running   10.254.255.88      worker1.ocp4.example.com
+```
+
+Like I did previously with Centos VM, I will create a service to connect with ssh using NodePort
+
+```
+cat <<EOF > kubevirt-fedora-svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: vmi-fedora-ssh-svc
+  namespace: cnv-demo
+spec:
+  ports:
+  - name: fedora-ssh-svc
+    nodePort: 31000
+    port: 25025
+    protocol: TCP
+    targetPort: 22
+  selector:
+    special: vmi-fedora
+  type: NodePort
+EOF
+
+$ oc apply -f kubevirt-fedora-svc.yaml
+service/vmi-fedora-ssh-svc created
+
+$ oc get svc -n cnv-demo
+NAME                 TYPE       CLUSTER-IP       EXTERNAL-IP   PORT(S)           AGE
+vmi-centos-ssh-svc   NodePort   172.30.115.77    <none>        27017:30000/TCP   5h16m
+vmi-fedora-ssh-svc   NodePort   172.30.247.145   <none>        25025:31000/TCP   98m
+```
+
+
+Connect to Fedora VM with ssh via service NodePort using worker node IP address. I will need to enable the network interfaces in custom networks, `neta` and `netb`.
+
+```
+$ ssh fedora@192.168.7.12 -p 31000
+The authenticity of host '[192.168.7.12]:31000 ([192.168.7.12]:31000)' can't be established.
+ECDSA key fingerprint is SHA256:JlhysyH0XiHXszLLqu8GmuSHB4msOYWPAJjZhv5j3FM.
+ECDSA key fingerprint is MD5:62:ca:0b:b9:21:c9:2b:73:db:b6:09:e2:b0:b4:81:60.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added '[192.168.7.12]:31000' (ECDSA) to the list of known hosts.
+fedora@192.168.7.12's password:
+
+[fedora@vmi-fedora ~]$ uname -sr
+Linux 4.13.9-300.fc27.x86_64
+
+[fedora@vmi-fedora ~]$ cat /etc/sysconfig/network-scripts/ifcfg-eth0
+# Created by cloud-init on instance boot automatically, do not edit.
+#
+BOOTPROTO=dhcp
+DEVICE=eth0
+HWADDR=02:dd:00:37:08:0d
+ONBOOT=yes
+TYPE=Ethernet
+USERCTL=no
+
+[fedora@vmi-fedora ~]$ cat /etc/sysconfig/network-scripts/ifcfg-eth1
+# Created by cloud-init on instance boot automatically, do not edit.
+#
+BOOTPROTO=dhcp
+DEVICE=eth1
+HWADDR=02:dd:3a:e6:dc:0d
+ONBOOT=yes
+TYPE=Ethernet
+USERCTL=no
+
+[fedora@vmi-fedora ~]$ cat /etc/sysconfig/network-scripts/ifcfg-eth2
+# Created by cloud-init on instance boot automatically, do not edit.
+#
+BOOTPROTO=dhcp
+DEVICE=eth2
+HWADDR=02:dd:71:6e:fa:0d
+ONBOOT=yes
+TYPE=Ethernet
+USERCTL=no
+
+$ sudo systemctl restart network
+
+[fedora@vmi-fedora ~]$ ip a
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host
+       valid_lft forever preferred_lft forever
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 02:dd:00:37:08:0d brd ff:ff:ff:ff:ff:ff
+    inet 10.254.255.88/16 brd 10.254.255.255 scope global dynamic eth0
+       valid_lft 86307318sec preferred_lft 86307318sec
+    inet6 fe80::dd:ff:fe37:80d/64 scope link
+       valid_lft forever preferred_lft forever
+3: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 02:dd:3a:e6:dc:0d brd ff:ff:ff:ff:ff:ff
+    inet 10.10.10.252/24 brd 10.10.10.255 scope global dynamic eth1
+       valid_lft 86307327sec preferred_lft 86307327sec
+    inet6 fe80::dd:3aff:fee6:dc0d/64 scope link
+       valid_lft forever preferred_lft forever
+4: eth2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 02:dd:71:6e:fa:0d brd ff:ff:ff:ff:ff:ff
+    inet 20.20.20.252/24 brd 20.20.20.255 scope global dynamic eth2
+       valid_lft 86307336sec preferred_lft 86307336sec
+    inet6 fe80::dd:71ff:fe6e:fa0d/64 scope link
+       valid_lft forever preferred_lft forever
+```
+
+
+
+
+
 ```
