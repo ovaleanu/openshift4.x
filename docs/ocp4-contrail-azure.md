@@ -102,7 +102,7 @@ $ ssh-keygen -b 4096 -t rsa -f ~/.ssh/id_rsa -N ""
 ```
 Create a working folder
 ```
-$ mkdir ~/aws-ocp4 ; cd ~/aws-ocp4
+$ mkdir ~/az-ocp4 ; cd ~/az-ocp4
 ```
 Create a installation configuration file. Check details on [OpenShift docs](https://docs.openshift.com/container-platform/4.5/installing/installing_azure/installing-azure-customizations.html#installation-initializing_installing-azure-customizations)
 ```
