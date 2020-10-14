@@ -91,7 +91,7 @@ spec:
   startingCSV: kubevirt-hyperconverged-operator.v2.4.1
   channel: &quot;2.4&quot;
 EOF</code></pre><p>This yaml file will create the required <code>Namespace</code>, <code>OperatorGroup</code> and <code>Subscription</code> for the OpenShift Virtualisation.</p>
-<pre><code>$ oc apply -f cnv.yaml</code></pre><p>Now we can deploy the OpenShift Virtualisation operator. Create a yaml file with the following content</p>
+<pre><code>$ oc apply -f cnv.yaml</code></pre><p>Now you can deploy the OpenShift Virtualisation operator. Create a yaml file with the following content</p>
 <pre><code>$ cat &lt;&lt;EOF &gt; kubevirt-hyperconverged.yaml
 apiVersion: hco.kubevirt.io/v1alpha1
 kind: HyperConverged
@@ -214,7 +214,7 @@ virt-launcher-vmi-centos7-ttngl   2/2     Running   0          3h57m   10.254.25
 $ oc get vmi
 NAME          AGE    PHASE     IP                 NODENAME
 vmi-centos7   4h1m   Running   10.254.255.90/16   worker0.ocp4.example.com</code></pre><h3 id="test-vm-to-pod-connectivity">Test VM to pod connectivity</h3>
-<p>To test VM to pod connectivity, let&apos;s create a small Ubuntu pod</p>
+<p>To test VM to pod connectivity, create a small Ubuntu pod</p>
 <pre><code>cat &lt;&lt;EOF &gt; ubuntu.yaml
 apiVersion: v1
 kind: Pod
@@ -323,7 +323,7 @@ rtt min/avg/max/mdev = 2.394/2.490/2.587/0.108 ms
 ^C
 [centos@vmi-centos7 ~]$
 `</code></pre><h3 id="creating-a-virtual-machine-with-multiple-interfaces">Creating a Virtual Machine with multiple interfaces</h3>
-<p>I will create two virtual networks <code>neta</code> and <code>netb</code> in Contrail</p>
+<p>You will create two virtual networks <code>neta</code> and <code>netb</code> in Contrail</p>
 <pre><code>$ cat &lt;&lt;EOF &gt; netab.yaml
 apiVersion: &quot;k8s.cni.cncf.io/v1&quot;
 kind: NetworkAttachmentDefinition
@@ -351,7 +351,7 @@ spec:
 }&apos;
 EOF
 
-$ oc apply -f netab.yaml</code></pre><p>Now I will create a Fedora VM with an interface in <code>neta</code> and another one in <code>netb</code>.
+$ oc apply -f netab.yaml</code></pre><p>Now you will create a Fedora VM with an interface in <code>neta</code> and another one in <code>netb</code>.
 (by default all the pods with multiple interfaces will have a interface in default podNetwork as well)</p>
 <p>Use the following manifest to create the VM</p>
 <pre><code>apiVersion: kubevirt.io/v1alpha3
@@ -437,7 +437,7 @@ service/vmi-fedora-ssh-svc created
 $ oc get svc -n cnv-demo
 NAME                 TYPE       CLUSTER-IP       EXTERNAL-IP   PORT(S)           AGE
 vmi-centos-ssh-svc   NodePort   172.30.115.77    &lt;none&gt;        27017:30000/TCP   5h16m
-vmi-fedora-ssh-svc   NodePort   172.30.247.145   &lt;none&gt;        25025:31000/TCP   98m</code></pre><p>Connect to Fedora VM with ssh via service NodePort using worker node IP address, lie I did previously with Centos VM. I will need to enable manually the network interfaces in the custom networks, <code>neta</code> and <code>netb</code>.</p>
+vmi-fedora-ssh-svc   NodePort   172.30.247.145   &lt;none&gt;        25025:31000/TCP   98m</code></pre><p>Connect to Fedora VM with ssh via service NodePort using worker node IP address, liie you did previously with Centos VM. You will need to enable manually the network interfaces in the custom networks, <code>neta</code> and <code>netb</code>.</p>
 <pre><code>$ ssh fedora@192.168.7.12 -p 31000
 The authenticity of host &apos;[192.168.7.12]:31000 ([192.168.7.12]:31000)&apos; can&apos;t be established.
 ECDSA key fingerprint is SHA256:JlhysyH0XiHXszLLqu8GmuSHB4msOYWPAJjZhv5j3FM.

@@ -85,7 +85,7 @@ This yaml file will create the required `Namespace`, `OperatorGroup` and `Subscr
 $ oc apply -f cnv.yaml
 ```
 
-Now we can deploy the OpenShift Virtualisation operator. Create a yaml file with the following content
+Now you can deploy the OpenShift Virtualisation operator. Create a yaml file with the following content
 ```
 $ cat <<EOF > kubevirt-hyperconverged.yaml
 apiVersion: hco.kubevirt.io/v1alpha1
@@ -248,7 +248,7 @@ vmi-centos7   4h1m   Running   10.254.255.90/16   worker0.ocp4.example.com
 
 ### Test VM to pod connectivity
 
-To test VM to pod connectivity, let's create a small Ubuntu pod
+To test VM to pod connectivity, create a small Ubuntu pod
 
 ```
 cat <<EOF > ubuntu.yaml
@@ -391,7 +391,7 @@ rtt min/avg/max/mdev = 2.394/2.490/2.587/0.108 ms
 
 ### Creating a Virtual Machine with multiple interfaces
 
-I will create two virtual networks `neta` and `netb` in Contrail
+You will create two virtual networks `neta` and `netb` in Contrail
 
 ```
 $ cat <<EOF > netab.yaml
@@ -424,7 +424,7 @@ EOF
 $ oc apply -f netab.yaml
 ```
 
-Now I will create a Fedora VM with an interface in `neta` and another one in `netb`.
+Now you will create a Fedora VM with an interface in `neta` and another one in `netb`.
 (by default all the pods with multiple interfaces will have a interface in default podNetwork as well)
 
 Use the following manifest to create the VM
@@ -527,7 +527,7 @@ vmi-fedora-ssh-svc   NodePort   172.30.247.145   <none>        25025:31000/TCP  
 ```
 
 
-Connect to Fedora VM with ssh via service NodePort using worker node IP address, lie I did previously with Centos VM. I will need to enable manually the network interfaces in the custom networks, `neta` and `netb`.
+Connect to Fedora VM with ssh via service NodePort using worker node IP address, liie you did previously with Centos VM. You will need to enable manually the network interfaces in the custom networks, `neta` and `netb`.
 
 ```
 $ ssh fedora@192.168.7.12 -p 31000
