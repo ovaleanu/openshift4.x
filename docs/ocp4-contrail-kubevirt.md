@@ -399,8 +399,10 @@ apiVersion: "k8s.cni.cncf.io/v1"
 kind: NetworkAttachmentDefinition
 metadata:
  name: neta
- annotations:
-   "opencontrail.org/cidr" : "10.10.10.0/24"
+ annotations: {
+   "opencontrail.org/cidr" : "10.10.10.0/24",
+   "opencontrail.org/ip_fabric_snat": "true"
+  }
 spec:
  config: '{
    "cniVersion": "0.3.1",
@@ -412,8 +414,10 @@ apiVersion: "k8s.cni.cncf.io/v1"
 kind: NetworkAttachmentDefinition
 metadata:
  name: netb
- annotations:
-   "opencontrail.org/cidr" : "20.20.20.0/24"
+ annotations: {
+   "opencontrail.org/cidr" : "20.20.20.0/24",
+   "opencontrail.org/ip_fabric_snat": "true"
+  }
 spec:
  config: '{
    "cniVersion": "0.3.1",
