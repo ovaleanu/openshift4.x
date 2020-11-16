@@ -66,10 +66,6 @@ $ az account show
 The OpenShift installer will use a service principal to do the installation. Because this service principale will create the cluster, I will specify also a RBAC role for this service principal.
 ```
 $ az ad sp create-for-rbac --role Contributor --name openshift-4
-Changing "openshift-4" to a valid URI of "http://openshift-4", which is the required format used for service principal names
-Creating a role assignment under the scope of "/subscriptions/f39bcbf9-3a71-414d-a17f-794d0fffe65c"
-  Retrying role assignment creation: 1/36
-  Retrying role assignment creation: 2/36
 {
   "appId": ".......",
   "displayName": "openshift-4",
