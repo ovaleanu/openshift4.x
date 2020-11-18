@@ -2,7 +2,7 @@
 
 The following procedure works also if bare metal servers are used. If there are existing DNS, DHCP, HTTP, PXE servers, update services following examples [here](https://github.com/ovaleanujnpr/openshift4.x/tree/master/bare-metal#bare-metal-prerequisites) and jump to [Create Ignition Configs](https://github.com/ovaleanujnpr/openshift4.x/blob/master/docs/ocp4-contrail-vm-bms.md#create-ignition-configs).
 
-The procedure follows [helper node installation guide line](https://github.com/RedHatOfficial/ocp4-helpernode/blob/master/docs/quickstart.md). Some modifications occurs becasue I am using disk type `dev/sda/` instead of `/dev/vda` and also when applying Contrail manifests.
+The procedure follows [helper node installation guide line](https://github.com/RedHatOfficial/ocp4-helpernode/blob/master/docs/quickstart.md). Some modifications occurs becasue I am using disk type `/dev/sda/` instead of `/dev/vda` and also when applying Contrail manifests.
 
 On the hypervisor host create a working directory
 
