@@ -35,12 +35,12 @@ Download the Kickstart file for either EL 7 or EL 8 for the helper node.
 
 **EL7**
 ```
-# wget https://raw.githubusercontent.com/RedHatOfficial/ocp4-helpernode/master/docs/examples/helper-ks.cfg -O helper-ks.cfg
+# wget https://github.com/ovaleanujnpr/openshift4.x/blob/master/docs/helper-ks.cfg -O helper-ks.cfg
 ```
 
 **EL 8**
 ```
-# wget https://raw.githubusercontent.com/RedHatOfficial/ocp4-helpernode/master/docs/examples/helper-ks8.cfg -O helper-ks.cfg
+# wget https://github.com/ovaleanujnpr/openshift4.x/blob/master/docs/helper-ks8.cfg -O helper-ks.cfg
 ```
 Edit `helper-ks.cfg` for your environment and use it to install the helper. The following command installs it "unattended".
 
