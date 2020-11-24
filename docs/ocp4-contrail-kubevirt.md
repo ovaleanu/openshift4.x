@@ -1,37 +1,7 @@
 ## OpenShift Virtualisation (KubeVirt) on OpenShift 4.5 with Contrail cluster
 
-KubeVirt is an open-source project that offers a VM-based virtualisation option on top of any Kubernetes cluster.
 
-KubeVirt can be installed using the KubeVirt operator, which manages the lifecycle of all the KubeVirt core components. More details on KubeVirt [page](https://kubevirt.io/).
-
-```
-$ export VERSION=$(curl -s https://api.github.com/repos/kubevirt/kubevirt/releases | grep tag_name | grep -v -- '-rc' | head -1 | awk -F': ' '{print $2}' | sed 's/,//' | xargs)
-$ echo $VERSION
-$ kubectl create -f https://github.com/kubevirt/kubevirt/releases/download/${VERSION}/kubevirt-operator.yaml
-$ kubectl get pods -n kubevirt
-NAME                               READY   STATUS    RESTARTS   AGE
-virt-operator-686668bbb8-n5pnj     1/1     Running   0          26m
-virt-operator-686668bbb8-qfnph     1/1     Running   1          26m
-```
-
-After KubeVirt operator is deployed you will deploy KubeVirt Custom Resource Definitions (CRD):
-
-```
-$ kubectl create -f https://github.com/kubevirt/kubevirt/releases/download/${VERSION}/kubevirt-cr.yaml
-$ kubectl get pods -n kubevirt
-NAME                               READY   STATUS    RESTARTS   AGE
-virt-api-6b448cf549-qkdh5          1/1     Running   0          23m
-virt-api-6b448cf549-tkgck          1/1     Running   0          23m
-virt-controller-85d767cbc6-cqbv8   1/1     Running   0          22m
-virt-controller-85d767cbc6-tbc9x   1/1     Running   1          22m
-virt-handler-ldd8b                 1/1     Running   0          22m
-virt-handler-stmcl                 1/1     Running   0          22m
-virt-handler-v2dg9                 1/1     Running   0          22m
-virt-operator-686668bbb8-n5pnj     1/1     Running   0          26m
-virt-operator-686668bbb8-qfnph     1/1     Running   1          26m
-```
-
-KubeVirt is the upsream project for OpenShift Virtualisation. OpenShift Virtualisation is an operator that enables developers to create and add virtualised applications to their projects from OperatorHub in the same way they would for a containerised application. The resulting virtual machines will run in parallel on the same Red Hat OpenShift nodes as traditional application containers.
+[KubeVirt](https://kubevirt.io/) is the upsream project for OpenShift Virtualisation. OpenShift Virtualisation is an operator that enables developers to create and add virtualised applications to their projects from OperatorHub in the same way they would for a containerised application. The resulting virtual machines will run in parallel on the same Red Hat OpenShift nodes as traditional application containers.
 
 You will go through the steps to install OpenShift Virtualisation 2.4 on OpenShift 4.5 with Contrail.
 
@@ -212,9 +182,9 @@ data:
 ```
 Then you need to restart `virt-handler` pods
 
-### Creating Virtual Machine on OpenShift Virtualisation
+### Creating Virtual Machines on OpenShift Virtualisation
 
-Create namespace for the demo. I will call it `cnv-demo`.
+Create namespace for the demo. I will call it `cnv-demo`
 
 ```
 $ oc new-project cnv-demo
