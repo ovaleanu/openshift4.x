@@ -35,12 +35,12 @@ Download the Kickstart file for either EL 7 or EL 8 for the helper node.
 
 **EL7**
 ```
-# wget https://github.com/ovaleanujnpr/openshift4.x/blob/master/docs/helper-ks.cfg -O helper-ks.cfg
+# wget https://github.com/ovaleanujnpr/openshift4.x/blob/master/docs/helper-ks.cfg -o helper-ks.cfg
 ```
 
 **EL 8**
 ```
-# wget https://github.com/ovaleanujnpr/openshift4.x/blob/master/docs/helper-ks8.cfg -O helper-ks.cfg
+# wget https://github.com/ovaleanujnpr/openshift4.x/blob/master/docs/helper-ks8.cfg -o helper-ks.cfg
 ```
 Edit `helper-ks.cfg` for your environment and use it to install the helper. The following command installs it "unattended".
 
@@ -49,7 +49,7 @@ Edit `helper-ks.cfg` for your environment and use it to install the helper. The 
 # virt-install --name="ocp4-aHelper" --vcpus=2 --ram=4096 \
 --disk path=/var/lib/libvirt/images/ocp4-aHelper.qcow2,bus=scsi,size=30 \
 --os-variant centos7.0 --network network=openshift4,model=virtio \
---boot hd,menu=on --location /var/lib/libvirt/iso/CentOS-7-x86_64-Minimal-2003.iso \
+--boot hd,menu=on --location /var/lib/libvirt/iso/CentOS-7-x86_64-Minimal-2009.iso \
 --initrd-inject helper-ks.cfg --extra-args "inst.ks=file:/helper-ks.cfg" --noautoconsole
 ```
 
