@@ -9,7 +9,7 @@ sudo yum -y install bind bind-utils
 **Configure firewall rules**
 
 ```
-sudo firewall-cmd --add-services=dns --permanent
+sudo firewall-cmd --add-service=dns --permanent
 sudo firewall-cmd --reload
 ```
 
