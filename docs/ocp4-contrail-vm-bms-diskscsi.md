@@ -165,8 +165,8 @@ metadata:
   name: ocp4
 networking:
   clusterNetworks:
-  - cidr: 10.254.0.0/16
-    hostPrefix: 24
+  - cidr: 10.128.0.0/14
+    hostPrefix: 23
   networkType: Contrail
   serviceNetwork:
   - 172.30.0.0/16
