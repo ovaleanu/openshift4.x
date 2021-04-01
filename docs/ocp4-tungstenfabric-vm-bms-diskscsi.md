@@ -238,7 +238,7 @@ done
 ```
 
 Configure a custom NTP server
-```
+
 If you are using a local NTP server you need to create a machineconfig for this. Edit IP address for the NTP server
 
 Create base64 env variable of my NTP server
