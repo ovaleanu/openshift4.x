@@ -1,4 +1,4 @@
-## Contrail with OpenShift 4.x installation on VMs running on KVM
+## TungstenFabric with OpenShift 4.6 installation on VMs running on KVM
 
 The following procedure works also if bare metal servers are used. If there are existing DNS, DHCP, HTTP, PXE servers, update services following examples [here](https://github.com/ovaleanujnpr/openshift4.x/tree/master/bare-metal#bare-metal-prerequisites) and jump to [Create Ignition Configs](https://github.com/ovaleanujnpr/openshift4.x/blob/master/docs/ocp4-contrail-vm-bms.md#create-ignition-configs).
 
