@@ -25,4 +25,6 @@
   [Example Web configuration](https://github.com/ovaleanujnpr/openshift4.x/tree/master/web-config)
 
 
-###  [Contrail & OpenShift 4.x installation procedure](https://github.com/ovaleanujnpr/openshift4.x/blob/master/docs/ocp4-contrail-vm-bms.md)
+###  [Contrail & OpenShift 4.x installation procedure](https://github.com/ovaleanujnpr/openshift4.x/blob/master/docs/ocp4-contrail-vm-bms-diskscsi.md)
+
+###  [TungstenFabric & OpenShift 4.6 installation procedure](https://github.com/ovaleanujnpr/openshift4.x/blob/master/docs/ocp4-tungstenfabric-vm-bms-diskscsi.md)

@@ -2,7 +2,7 @@
 
 The following procedure works also if bare metal servers are used. If there are existing DNS, DHCP, HTTP, PXE servers, update services following examples [here](https://github.com/ovaleanujnpr/openshift4.x/tree/master/bare-metal#bare-metal-prerequisites) and jump to [Create Ignition Configs](https://github.com/ovaleanujnpr/openshift4.x/blob/master/docs/ocp4-contrail-vm-bms.md#create-ignition-configs).
 
-The procedure follows [helper node installation guide line](https://github.com/RedHatOfficial/ocp4-helpernode/blob/master/docs/quickstart.md). Some modifications occurs when applying Contrail manifests
+The procedure follows [helper node installation guide line](https://github.com/RedHatOfficial/ocp4-helpernode/blob/master/docs/quickstart.md). Some modifications occurs becasue I am using disk type `/dev/sda/` instead of `/dev/vda` and also when applying Contrail manifests.
 
 On the hypervisor host create a working directory
 
@@ -35,28 +35,28 @@ Download the Kickstart file for either EL 7 or EL 8 for the helper node.
 
 **EL7**
 ```
-# wget https://raw.githubusercontent.com/RedHatOfficial/ocp4-helpernode/master/docs/examples/helper-ks.cfg -O helper-ks.cfg
+# wget https://github.com/ovaleanujnpr/openshift4.x/blob/master/docs/helper-ks.cfg -o helper-ks.cfg
 ```
 
 **EL 8**
 ```
-# wget https://raw.githubusercontent.com/RedHatOfficial/ocp4-helpernode/master/docs/examples/helper-ks8.cfg -O helper-ks.cfg
+# wget https://github.com/ovaleanujnpr/openshift4.x/blob/master/docs/helper-ks8.cfg -o helper-ks.cfg
 ```
 Edit `helper-ks.cfg` for your environment and use it to install the helper. The following command installs it "unattended".
 
 **EL7**
 ```
 # virt-install --name="ocp4-aHelper" --vcpus=2 --ram=4096 \
---disk path=/var/lib/libvirt/images/ocp4-aHelper.qcow2,bus=virtio,size=30 \
+--disk path=/var/lib/libvirt/images/ocp4-aHelper.qcow2,bus=scsi,size=30 \
 --os-variant centos7.0 --network network=openshift4,model=virtio \
---boot hd,menu=on --location /var/lib/libvirt/iso/CentOS-7-x86_64-Minimal-2003.iso \
+--boot hd,menu=on --location /var/lib/libvirt/iso/CentOS-7-x86_64-Minimal-2009.iso \
 --initrd-inject helper-ks.cfg --extra-args "inst.ks=file:/helper-ks.cfg" --noautoconsole
 ```
 
 **EL 8**
 ```
 # virt-install --name="ocp4-aHelper" --vcpus=2 --ram=4096 \
---disk path=/var/lib/libvirt/images/ocp4-aHelper.qcow2,bus=virtio,size=50 \
+--disk path=/var/lib/libvirt/images/ocp4-aHelper.qcow2,bus=scsi,size=50 \
 --os-variant centos8 --network network=openshift4,model=virtio \
 --boot hd,menu=on --location /var/lib/libvirt/iso/CentOS-8.2.2004-x86_64-dvd1.iso \
 --initrd-inject helper-ks.cfg --extra-args "inst.ks=file:/helper-ks.cfg" --noautoconsole
@@ -100,7 +100,7 @@ Install `ansible` and `git` and clone this helpernode repo
 # cd ocp4-helpernode
 ```
 
-Copy vars.yaml file. Edit and change it if is necessary (domain name, mac addresses, ipam in case you used a different subnet...).
+Copy vars.yaml file. Edit and change `disk` as `sda` and domain name, mac addresses, ipam in case you used a different subnet.
 ```
 # cp docs/examples/vars.yaml .
 ```
@@ -126,7 +126,7 @@ Create a place to store your pull-secret
 # mkdir -p ~/.openshift
 ```
 
-Visit [try.openshift.com](https://cloud.redhat.com/openshift/install) and select "Bare Metal". Download your pull secret and save it under ~/.openshift/pull-secret
+Visit [try.openshift.com](https://cloud.redhat.com/openshift/install) and select "Bare Metal". Download your pull secret and save it under ~/.openshift/pull-secret. Edit the pull-secret to include credentials for Juniepr docker repository.
 
 ```
 # ls -l ~/.openshift/pull-secret
@@ -154,20 +154,20 @@ Next, create an `install-config.yaml` file.
 apiVersion: v1
 baseDomain: example.com
 compute:
-- hyperthreading: Disabled
+- hyperthreading: Enabled
   name: worker
   replicas: 0
 controlPlane:
-  hyperthreading: Disabled
+  hyperthreading: Enabled
   name: master
   replicas: 3
 metadata:
   name: ocp4
 networking:
   clusterNetworks:
-  - cidr: 10.254.0.0/16
-    hostPrefix: 24
-  networkType: Contrail
+  - cidr: 10.128.0.0/14
+    hostPrefix: 23
+  networkType: TungstenFabric
   serviceNetwork:
   - 172.30.0.0/16
 platform:
@@ -177,7 +177,7 @@ sshKey: '$(< ~/.ssh/helper_rsa.pub)'
 EOF
 ```
 
-Create the installation manifests
+Create the OpenShift installation manifests
 ```
 # openshift-install create manifests
 ```
@@ -202,30 +202,118 @@ spec:
 status: {}
 ```
 
-Clone contrail operator repository
+Download TF Openshift manifests add add them to the installation
+```
+# export INSTALL_DIR=/root/ocp4
+# git clone https://github.com/tungstenfabric/tf-openshift.git
+# ./tf-openshift/scripts/apply_install_manifests.sh $INSTALL_DIR
+```
+
+Download TF Operator manifests add add them to the installation
+```
+# git clone https://github.com/tungstenfabric/tf-operator.git
+# cd tf-operator
+# git checkout R2011 && cd ..
+# export CONTRAIL_DEPLOYER_CONTAINER_TAG="R2011.L1.229"
+# export DEPLOYER_CONTAINER_REGISTRY="hub.juniper.net/contrail-nightly"
+# export CONTRAIL_CONTAINER_TAG="R2011.L1.229"
+# export CONTAINER_REGISTRY="hub.juniper.net/contrail-nightly"
+# export KUBECONFIG=$INSTALL_DIR/auth/kubeconfig
+# export DEPLOYER="openshift"
+# export KUBERNETES_CLUSTER_NAME="ocp4"
+# export KUBERNETES_CLUSTER_DOMAIN="example.com"
+# export CONTRAIL_REPLICAS=3
+# ./tf-operator/contrib/render_manifests.sh
+
+# for i in $(ls ./tf-operator/deploy/crds/) ; do
+  cp ./tf-operator/deploy/crds/$i $INSTALL_DIR/manifests/01_$i
+done
+
+# for i in namespace service-account role cluster-role role-binding cluster-role-binding ; do
+  cp ./tf-operator/deploy/kustomize/base/operator/$i.yaml $INSTALL_DIR/manifests/02-tf-operator-$i.yaml
+done
+
+# oc kustomize ./tf-operator/deploy/kustomize/operator/templates/ | sed -n 'H; /---/h; ${g;p;}' > $INSTALL_DIR/manifests/02-tf-operator.yaml
+# oc kustomize ./tf-operator/deploy/kustomize/contrail/templates/ > $INSTALL_DIR/manifests/03-tf.yaml
+```
+
+Configure a custom NTP server
+```
+If you are using a local NTP server you need to create a machineconfig for this. Edit IP address for the NTP server
+
+Create base64 env variable of my NTP server
 
 ```
-# git clone https://github.com/Juniper/contrail-operator.git
-# git checkout R2008
+export CHRONY_CONF_BASE64=$(cat << EOF | base64 -w 0
+server <IP_NTP_SERVER> iburst
+driftfile /var/lib/chrony/drift
+makestep 1.0 3
+rtcsync
+logdir /var/log/chrony
+EOF
+)
 ```
 
-Create Contrail operator configuration file
+Create config for control-plane (master) nodes
 
 ```
-# cat <<EOF > config_contrail_operator.yaml
-CONTRAIL_VERSION=2008.121
-CONTRAIL_REGISTRY=hub.juniper.net/contrail-nightly
-DOCKER_CONFIG=<this_needs_to_be_generated>
+cat << EOF > ./openshift/99_masters-chrony-configuration.yaml
+apiVersion: machineconfiguration.openshift.io/v1
+kind: MachineConfig
+metadata:
+  labels:
+    machineconfiguration.openshift.io/role: master
+  name: masters-chrony-configuration
+spec:
+  config:
+    ignition:
+      config: {}
+      security:
+        tls: {}
+      timeouts: {}
+      version: 2.2.0
+    networkd: {}
+    passwd: {}
+    storage:
+      files:
+      - contents:
+          source: data:text/plain;charset=utf-8;base64,$CHRONY_CONF_BASE64
+          verification: {}
+        filesystem: root
+        mode: 420
+        path: /etc/chrony.conf
 EOF
 ```
-`DOCKER_CONFIG` is configuration for registry secret to closed container registry (if registry is wide open then no credentials are required) Set `DOCKER_CONFIG` to registry secret with proper data in base64.
 
-_NOTE: You may create base64 encoded value for config with script provided [here](https://github.com/Juniper/contrail-operator/tree/master/deploy/openshift/tools/docker-config-generate). Copy output of the script and paste into config used to install-manifests script._
-
-Install Contrail manifests
+Create config for worker nodes
 
 ```
-# ./contrail-operator/deploy/openshift/install-manifests.sh --dir ./ --config ./config_contrail_operator.yaml
+cat << EOF > ./openshift/99_workers-chrony-configuration.yaml
+apiVersion: machineconfiguration.openshift.io/v1
+kind: MachineConfig
+metadata:
+  labels:
+    machineconfiguration.openshift.io/role: worker
+  name: workers-chrony-configuration
+spec:
+  config:
+    ignition:
+      config: {}
+      security:
+        tls: {}
+      timeouts: {}
+      version: 2.2.0
+    networkd: {}
+    passwd: {}
+    storage:
+      files:
+      - contents:
+          source: data:text/plain;charset=utf-8;base64,$CHRONY_CONF_BASE64
+          verification: {}
+        filesystem: root
+        mode: 420
+        path: /etc/chrony.conf
+EOF
 ```
 
 Generate the ignition configs
@@ -249,38 +337,18 @@ From the hypervisor launch VMs using PXE booting. For BMS, boot the servers usin
 
 Launch Bootstrap VM
 ```
-# virt-install --pxe --network bridge=openshift4 --mac=52:54:00:60:72:67 --name ocp4-bootstrap --ram=8192 --vcpus=4 --os-variant rhel8.0 --disk path=/var/lib/libvirt/images/ocp4-bootstrap.qcow2,size=120 --vnc
+# virt-install --pxe --network bridge=openshift4 --mac=52:54:00:60:72:67 --name ocp4-bootstrap --ram=8192 --vcpus=4 --os-variant rhel8.0 --disk path=/var/lib/libvirt/images/ocp4-bootstrap.qcow2,bus=scsi,size=120 --vnc
 ```
 This command will create a bootstrap node VM, will connect to PXE server (our Helper), assign the IP address from DHCP and download the RHCOS image from the HTTP server. At the end of the installation it will embed the ignition file. After the node is installed and rebooted we can connect to it from the Helper.
 
-```
-# ssh -i ~/.ssh/helper_rsa core@192.168.7.20
-```
 
-Use `journalctl -f` to see the logs
 
-On the Bootstrap node a temporary etcd and bootkube is created. When these services are running
+Launch the Masters VMs
 
 ```
-[core@bootstrap ~]$ sudo crictl ps
-CONTAINER           IMAGE                                                                                                                    CREATED              STATE               NAME                             ATTEMPT             POD ID
-33762f4a23d7d       976cc3323bd3394e613ff3d9ff02cd2ab55456063e08d6e275e81f71349d6399                                                         54 seconds ago       Running             manager                          3                   29aed2b586f33
-ad6f2453d7a16       86694d2cdf8823ae48f13242bbd7a381eaab0218831ed53e9806b5e19608b1ed                                                         About a minute ago   Running             kube-apiserver-insecure-readyz   0                   4cd5138fb8fa7
-3bbdf4176882f       quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:8db6b7ce80d002fb2687c6408d0efaae7cd908bb83b7b13ea512ad880747f02c   About a minute ago   Running             kube-scheduler                   0                   b3e7e6831100c
-57ad52023300e       quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:8db6b7ce80d002fb2687c6408d0efaae7cd908bb83b7b13ea512ad880747f02c   About a minute ago   Running             kube-controller-manager          0                   596e248e26449
-a1dbe7b8950da       quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:8db6b7ce80d002fb2687c6408d0efaae7cd908bb83b7b13ea512ad880747f02c   About a minute ago   Running             kube-apiserver                   0                   4cd5138fb8fa7
-5aa7a59a06feb       quay.io/openshift-release-dev/ocp-release@sha256:2e4bbcf4dff0857bec6328c77d3a0480c1ae6778d48c7fba197f54a3e1912c72        About a minute ago   Running             cluster-version-operator         0                   3ab41a6177a8d
-ca45790f4a5f6       099c2a95af4ff574a824a5476a960e86deec7e31882294116d195eb186752d36                                                         About a minute ago   Running             etcd-metrics                     0                   081b292dfe92b
-e72fb8aaa1606       quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:3af018d2799385f4e516cec73e24915351acf0012a8b775cf852eb05ad34797d   About a minute ago   Running             etcd-member                      0                   081b292dfe92b
-ca56bbf2708f7       1ac19399249cf839f48e246869b6932ce1273afb6a11a25e0eccb01092ea3cbf                                                         About a minute ago   Running             machine-config-server            0                   c1127810cd0ed
-```
-
-it is time to launch the Masters VMs
-
-```
-# virt-install --pxe --network bridge=openshift4 --mac=52:54:00:e7:9d:67 --name ocp4-master0 --ram=40960 --vcpus=10 --os-variant rhel8.0 --disk path=/var/lib/libvirt/images/ocp4-master0.qcow2,size=250 --vnc
-# virt-install --pxe --network bridge=openshift4 --mac=52:54:00:80:16:23 --name ocp4-master1 --ram=40960 --vcpus=10 --os-variant rhel8.0 --disk path=/var/lib/libvirt/images/ocp4-master1.qcow2,size=250 --vnc
-# virt-install --pxe --network bridge=openshift4 --mac=52:54:00:d5:1c:39 --name ocp4-master2 --ram=40960 --vcpus=10 --os-variant rhel8.0 --disk path=/var/lib/libvirt/images/ocp4-master2.qcow2,size=250 --vnc
+# virt-install --pxe --network bridge=openshift4 --mac=52:54:00:e7:9d:67 --name ocp4-master0 --ram=40960 --vcpus=10 --os-variant rhel8.0 --disk path=/var/lib/libvirt/images/ocp4-master0.qcow2,bus=scsi,size=150 --vnc
+# virt-install --pxe --network bridge=openshift4 --mac=52:54:00:80:16:23 --name ocp4-master1 --ram=40960 --vcpus=10 --os-variant rhel8.0 --disk path=/var/lib/libvirt/images/ocp4-master1.qcow2,bus=scsi,size=150 --vnc
+# virt-install --pxe --network bridge=openshift4 --mac=52:54:00:d5:1c:39 --name ocp4-master2 --ram=40960 --vcpus=10 --os-variant rhel8.0 --disk path=/var/lib/libvirt/images/ocp4-master2.qcow2,bus=scsi,size=150 --vnc
 ```
 
 You can login to the Master from Helper Node
@@ -313,8 +381,8 @@ INFO It is now safe to remove the bootstrap resources
 You can delete the bootstrap VM and luanch the Worker nodes from the Hypervisor
 
 ```
-# virt-install --pxe --network bridge=openshift4 --mac=52:54:00:f4:26:a1 --name ocp4-worker0 --ram=16384 --vcpus=6 --os-variant rhel8.0 --disk path=/var/lib/libvirt/images/ocp4-worker0.qcow2,size=120 --vnc
-# virt-install --pxe --network bridge=openshift4 --mac=52:54:00:82:90:00 --name ocp4-worker1 --ram=16384 --vcpus=6 --os-variant rhel8.0 --disk path=/var/lib/libvirt/images/ocp4-worker1.qcow2,size=120 --vnc
+# virt-install --pxe --network bridge=openshift4 --mac=52:54:00:f4:26:a1 --name ocp4-worker0 --ram=16384 --vcpus=6 --os-variant rhel8.0 --disk path=/var/lib/libvirt/images/ocp4-worker0.qcow2,bus=scsi,size=120 --vnc
+# virt-install --pxe --network bridge=openshift4 --mac=52:54:00:82:90:00 --name ocp4-worker1 --ram=16384 --vcpus=6 --os-variant rhel8.0 --disk path=/var/lib/libvirt/images/ocp4-worker1.qcow2,bus=scsi,size=120 --vnc
 ```
 
 ### Finish Install
