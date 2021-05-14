@@ -6,7 +6,7 @@ You must have a DNS domain [Azure App Service Domain](https://docs.microsoft.com
 
 My domain is azovsandbox.com
 
-![](https://github.com/ovaleanujnpr/openshift4.x/blob/master/images/azure-domain.png)
+![](https://github.com/ovaleanu/openshift4.x/blob/master/images/azure-domain.png)
 
 ### Configure Azure CLI
 

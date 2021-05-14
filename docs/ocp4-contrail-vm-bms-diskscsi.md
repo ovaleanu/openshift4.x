@@ -1,6 +1,6 @@
 ## Contrail with OpenShift 4.x installation on VMs running on KVM
 
-The following procedure works also if bare metal servers are used. If there are existing DNS, DHCP, HTTP, PXE servers, update services following examples [here](https://github.com/ovaleanujnpr/openshift4.x/tree/master/bare-metal#bare-metal-prerequisites) and jump to [Create Ignition Configs](https://github.com/ovaleanujnpr/openshift4.x/blob/master/docs/ocp4-contrail-vm-bms.md#create-ignition-configs).
+The following procedure works also if bare metal servers are used. If there are existing DNS, DHCP, HTTP, PXE servers, update services following examples [here](https://github.com/ovaleanu/openshift4.x/tree/master/bare-metal#bare-metal-prerequisites) and jump to [Create Ignition Configs](https://github.com/ovaleanu/openshift4.x/blob/master/docs/ocp4-contrail-vm-bms.md#create-ignition-configs).
 
 The procedure follows [helper node installation guide line](https://github.com/RedHatOfficial/ocp4-helpernode/blob/master/docs/quickstart.md). Some modifications occurs becasue I am using disk type `/dev/sda/` instead of `/dev/vda` and also when applying Contrail manifests.
 
@@ -35,12 +35,12 @@ Download the Kickstart file for either EL 7 or EL 8 for the helper node.
 
 **EL7**
 ```
-# wget https://github.com/ovaleanujnpr/openshift4.x/blob/master/docs/helper-ks.cfg -o helper-ks.cfg
+# wget https://github.com/ovaleanu/openshift4.x/blob/master/docs/helper-ks.cfg -o helper-ks.cfg
 ```
 
 **EL 8**
 ```
-# wget https://github.com/ovaleanujnpr/openshift4.x/blob/master/docs/helper-ks8.cfg -o helper-ks.cfg
+# wget https://github.com/ovaleanu/openshift4.x/blob/master/docs/helper-ks8.cfg -o helper-ks.cfg
 ```
 Edit `helper-ks.cfg` for your environment and use it to install the helper. The following command installs it "unattended".
 
